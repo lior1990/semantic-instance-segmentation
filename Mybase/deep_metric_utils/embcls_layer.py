@@ -137,7 +137,11 @@ class EmbclsLayer(object):
         xcd_idxs = tf.range(self.fet_shp[1])                                          #(W)
         xcd_idxs = tf.expand_dims(xcd_idxs, axis= 0)                                  #(1, W)
         xcd_idxs = tf.tile(xcd_idxs, [self.fet_shp[0], 1])                            #(H, W)
-        pix_idxs = tf.stack([ycd_idxs, xcd_idxs, sim_idxs],  axis=-1)                 #(H, W, 3)
+        try:
+            pix_idxs = tf.stack([ycd_idxs, xcd_idxs, sim_idxs],  axis=-1)                 #(H, W, 3)
+        except:
+            sim_idxs_32 = tf.cast(sim_idxs, dtype=tf.int32)
+            pix_idxs = tf.stack([ycd_idxs, xcd_idxs, sim_idxs_32],  axis=-1)                 #(H, W, 3)
         pix_prbs = tf.gather_nd(pix_prbs, pix_idxs)                                   #(H, W)
         pix_clss = tf.gather_nd(pix_clss, pix_idxs)                                   #(H, W)
         #pix_prbs= tf.Print(pix_prbs, [pix_prbs, pix_clss], message=None, first_n=None, summarize=256)
